@@ -42,7 +42,7 @@
 #    - Double-click the output window while in fullscreen to return to windowed mode.
 # =============================================================================
 import os
-import sys
+# import sys  # (unused)
 import time
 import threading
 import traceback
@@ -651,7 +651,7 @@ def main():
             idle = np.zeros((720, 1280, 3), dtype=np.uint8)
             cv2.putText(idle, f"{APP_NAME} (Stopped) - Use tray menu to Start",
                         (40, 120), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 255), 2, cv2.LINE_AA)
-            idle = overlay_floating_icon(idle, floating_icon_rgba, text=WATERMARK_TEXT, corner=FLOATING_ICON_CORNER)
+            idle = overlay_floating_icon(idle, floating_icon_rgba, corner=cfg.FLOATING_ICON_CORNER)
             cv2.imshow(win_name, idle)
             if (cv2.waitKey(30) & 0xFF) in (ord('q'), 27):
                 with STATE.lock:
@@ -684,7 +684,7 @@ def main():
                     STATE.last_error = err
                 frame = np.zeros((720, 1280, 3), dtype=np.uint8)
                 cv2.putText(frame, err, (40, 120), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2, cv2.LINE_AA)
-                frame = overlay_floating_icon(frame, floating_icon_rgba, text=WATERMARK_TEXT, corner=FLOATING_ICON_CORNER)
+                frame = overlay_floating_icon(frame, floating_icon_rgba, corner=cfg.FLOATING_ICON_CORNER)
                 cv2.imshow(win_name, frame)
                 cv2.waitKey(200)
                 continue
@@ -714,7 +714,7 @@ def main():
                     STATE.last_error = err
                 out = np.zeros((720, 1280, 3), dtype=np.uint8)
                 cv2.putText(out, err, (40, 120), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2, cv2.LINE_AA)
-                out = overlay_floating_icon(out, floating_icon_rgba, text=WATERMARK_TEXT, corner=FLOATING_ICON_CORNER)
+                out = overlay_floating_icon(out, floating_icon_rgba, corner=cfg.FLOATING_ICON_CORNER)
                 cv2.imshow(win_name, out)
                 cv2.waitKey(100)
                 continue
@@ -740,7 +740,7 @@ def main():
         out = sbs.copy()
         cv2.putText(out, f"{APP_NAME} | {current_src}:{current_sel} | FPS~{fps:.1f}",
                     (20, 40), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 255), 2, cv2.LINE_AA)
-        out = overlay_floating_icon(out, floating_icon_rgba, text=WATERMARK_TEXT, corner=FLOATING_ICON_CORNER)
+        out = overlay_floating_icon(out, floating_icon_rgba, corner=cfg.FLOATING_ICON_CORNER)
 
         cv2.imshow(win_name, out)
 
@@ -814,36 +814,38 @@ def persist_config():
     save_config(cfg_dict)
 
 def get_about_text():
-    return (
-        "pAR3D by ProgreTech
-"
-        "Version " + APP_VERSION + "
+    return f"""pAR3D by ProgreTech
+Version {APP_VERSION}
 
-"
-        "Developed by Edwin Rodriguez (Project ProgreTech)
-"
-        "GitHub: https://github.com/eabdiel (repo: pAR3D)
+Developed by Edwin Rodriguez (Project ProgreTech)
+GitHub: https://github.com/eabdiel (repo: pAR3D)
 
-"
-        "Side-by-side 3D screen depth visualization
-"
-        "CPU-first, CUDA-enabled when available"
-    )
+Side-by-side 3D screen depth visualization
+CPU-first, CUDA-enabled when available
+"""
 
 def show_about(icon=None, item=None):
-    """Show a simple About dialog (non-blocking for the main OpenCV loop)."""
+    """Show an About dialog. Uses native Windows MessageBox when available (reliable from tray thread)."""
+    msg = get_about_text()
+    if os.name == "nt":
+        try:
+            import ctypes
+            ctypes.windll.user32.MessageBoxW(None, msg, APP_NAME, 0x00000040)  # MB_ICONINFORMATION
+            return
+        except Exception:
+            pass
+
+    # Fallback to Tk (or console)
     try:
         import tkinter as tk
         from tkinter import messagebox
         root = tk.Tk()
         root.withdraw()
         root.attributes("-topmost", True)
-        messagebox.showinfo(APP_NAME, get_about_text())
+        messagebox.showinfo(APP_NAME, msg)
         root.destroy()
     except Exception:
-        # If Tk isn't available (rare), print to console
-        print(get_about_text())
-
+        print(msg)
 if __name__ == "__main__":
     try:
         main()
