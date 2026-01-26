@@ -1,0 +1,8 @@
+opencv-python
+numpy
+mss
+pillow
+transformers>=4.38
+torch
+pystray
+pywin32; platform_system=="Windows"
