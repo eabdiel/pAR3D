@@ -26,7 +26,7 @@ It is designed for experimentation, visualization, and creative exploration of r
 
 - Python 3.9+
 - Windows 10 / 11
-- CPU-only systems supported
+- CPU-only or APU-only systems are supported
 - NVIDIA GPU (optional, for acceleration)
 
 ---
