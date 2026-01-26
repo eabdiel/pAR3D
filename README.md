@@ -2,7 +2,7 @@
 
 **pAR3D** is a real-time side-by-side (SBS) 3D visualization tool that transforms your desktop or camera feed into a stereoscopic depth experience using modern AI depth estimation.
 
-It is designed for experimentation, visualization, and creative exploration of real-time depth-based rendering on standard consumer hardware.
+It is designed for experimentation, visualization, and creative exploration of real-time depth-based rendering on standard consumer hardware (like xReal, Viture and Rokid AR Glasses).
 
 ---
 
