@@ -42,7 +42,7 @@
 #    - Double-click the output window while in fullscreen to return to windowed mode.
 # =============================================================================
 import os
-# import sys  # (unused)
+import sys
 import time
 import threading
 import traceback
@@ -74,6 +74,13 @@ os.environ.setdefault("HF_HUB_DISABLE_SYMLINKS_WARNING", "1")
 
 import argparse
 
+def resource_path(relative: str) -> Path:
+    """
+    Return an absolute path to a resource.
+    Works for dev (script) and PyInstaller onefile (sys._MEIPASS).
+    """
+    base = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent))
+    return base / relative
 
 APP_NAME = "pAR3D by ProgreTech"
 APP_VERSION = "0.1.0"
@@ -81,7 +88,7 @@ APP_VERSION = "0.1.0"
 # Default is depth-anything/Depth-Anything-V2-Base-hf
 # try depth-anything/Depth-Anything-V2-Small-hf or depth-anything/Depth-Anything-V2-Large-hf
 MODEL_ID_DEFAULT = "depth-anything/Depth-Anything-V2-Base-hf"
-ICON_PNG_DEFAULT = os.path.join("assets", "ogre-icon-1-150x150.png")
+ICON_PNG_DEFAULT = os.path.join("assets", "pARD3D_icon.png")
 ICON_ICO_DEFAULT = os.path.join("assets", "pAR3D.ico")
 # Floating icon settings (bottom-right of the SBS output)
 FLOATING_ICON_CORNER = "br"
